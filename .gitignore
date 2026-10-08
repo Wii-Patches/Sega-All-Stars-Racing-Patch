@@ -1,0 +1,7 @@
+ref/
+dols/
+dolphin_user/
+*.iso
+*.dol
+*.elf
+__pycache__/
