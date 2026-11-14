@@ -4,10 +4,10 @@ Plug a GameCube controller into **port 1**. The pad shows up to the game as a Cl
 which the game already supports (`ControllerWii::ConvertPadData`, extension type 2), so the rest of
 the game's controller code is untouched.
 
-**Status: works in Dolphin** (USA, DOL patch and Gecko code), with no Wii Remote connected: title
-screen, menus (D-pad, stick, A/B), name entry, Mii select and driving the test drive (gas, steering).
-Pad input was fed through the patch's debug build; not yet tried with a real pad on a console.
-Europe (R3RP8P) uses the same code addresses, so the same patch applies.
+**Status: works in Dolphin** on USA and Europe, both through the ISO patcher and the Gecko code:
+title screen, menus (D-pad, stick, A/B), name entry, Mii select and driving (gas, steering), with no
+Wii Remote and with a bare Wii Remote connected. Every button and both sticks were checked through
+Dolphin's emulated GameCube pad on the real Serial Interface path. Not yet tried on a console.
 
 ## Using it
 Download **Sega-All-Stars-Racing-ISO-Patcher** for your system from the
