@@ -78,6 +78,16 @@ def gecko_text(title, patch):
 if __name__ == '__main__':
     args = sys.argv[1:]
     gecko = None
+    if '--prebuilt' in args:
+        # the patch the ISO patcher ships (USA and Europe share one main.dol)
+        import json
+        args.remove('--prebuilt')
+        p = for_dol(args[0] if args else REF)
+        p = {'state': p['state'], 'sites': p['sites'], 'orig': p['orig']}
+        out = os.path.join(HERE, 'tools', 'prebuilt', 'R3R.json')
+        json.dump(p, open(out, 'w'), indent=1)
+        print('wrote', out)
+        sys.exit(0)
     if '--gecko' in args:
         i = args.index('--gecko'); gecko = args[i + 1]; del args[i:i + 2]
     for p in args or sorted(glob.glob(os.path.join(HERE, 'dols', '*.dol'))):

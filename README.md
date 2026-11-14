@@ -9,6 +9,14 @@ screen, menus (D-pad, stick, A/B), name entry, Mii select and driving the test d
 Pad input was fed through the patch's debug build; not yet tried with a real pad on a console.
 Europe (R3RP8P) uses the same code addresses, so the same patch applies.
 
+## Using it
+Download **Sega-All-Stars-Racing-ISO-Patcher** for your system from the
+[Releases](https://github.com/Wii-Patches/Sega-All-Stars-Racing-Patch/releases) page, open it and drop
+in your disc image (.wbfs, .iso or .rvz) or `main.dol`. A .wbfs/.iso is patched in place and the original
+is kept as `<name>.bak`; an .rvz is written out as a new .wbfs. Wiimms ISO Tool is bundled.
+
+The Gecko codes in `gecko/` (one per region) do the same thing for loaders with cheat support or Dolphin.
+
 ## How it works
 The game polls controllers through `WPADProbe` and `WPADRead`, and never links the PAD library.
 Two hooks (`src/gcpad.c`, `src/hooks.S`), approach from Barrel Blast Patch / ACCF gcpad:
@@ -26,6 +34,9 @@ Needs devkitPPC and your own `main.dol` at `dols/R3RE8P.dol` (USA) or `dols/R3RP
 
     python3 build.py --gecko gecko/R3RE8P.txt     # compile hooks, write the Gecko code
     python3 patch_dol.py dols/R3RE8P.dol main.dol # or patch a main.dol directly
+    python3 build.py --prebuilt                   # refresh tools/prebuilt/R3R.json for the ISO patcher
+
+The USA and Europe discs share one byte-identical `main.dol`.
 
 `anchors.py` resolves addresses by matching code, so other regions can be added by dropping their
 `main.dol` into `dols/`. The Gecko code keeps its state at 0x80002FC0 (top of the loader's code-list

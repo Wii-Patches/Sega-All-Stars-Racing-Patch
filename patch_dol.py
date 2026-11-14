@@ -13,8 +13,6 @@ import os, struct, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'tools'))
 sys.path.insert(0, HERE)
-import build
-
 BASE = 0x80001820
 LIMIT = 0x80003000
 
@@ -90,6 +88,7 @@ def apply(data, patch):
 if __name__ == '__main__':
     src, dst = sys.argv[1:3]
     data = open(src, 'rb').read()
+    import build
     patch = build.for_dol(src)
     out = apply(data, patch)
     open(dst, 'wb').write(out)

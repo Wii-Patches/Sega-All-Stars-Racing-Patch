@@ -5,3 +5,6 @@ dolphin_user/
 *.dol
 *.elf
 __pycache__/
+
+# Python
+*.pyc
