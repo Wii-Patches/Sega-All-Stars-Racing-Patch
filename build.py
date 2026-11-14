@@ -14,7 +14,11 @@ import anchors
 
 DEVKIT = os.environ.get('DEVKITPPC', '/opt/devkitpro/devkitPPC')
 CC = DEVKIT + '/bin/powerpc-eabi-'
-STATE = 0x80002800          # zeroed by the patch section itself (patch_dol.py)
+STATE = 0x80002800          # DOL patch: zeroed by the patch section itself (patch_dol.py)
+# Gecko: a loader puts its code handler at 0x80001800 and the code list right after it
+# (0x800027E8 in Dolphin, 0x800028B8 in USB Loader GX), so 0x80002800 lands inside our own
+# hooks.  The top of that window (it ends at 0x80003000) stays clear for a list this size.
+GECKO_STATE = 0x80002FC0
 REF = os.path.join(HERE, 'dols', 'R3RE8P.dol')
 
 
@@ -35,11 +39,11 @@ def compile_hook(name, defs):
     return list(struct.unpack('>%dI' % (len(b) // 4), b))
 
 
-def for_dol(path):
+def for_dol(path, state=STATE):
     dol = Dol(path)
     a = anchors.resolve(Dol(REF), dol)
     defs = {
-        'STATE': '0x%08Xu' % STATE,
+        'STATE': '0x%08Xu' % state,
         'SI_TYPES': '0x%08Xu' % a['SiTypes'],
         'SI_BUSY': '0x%08Xu' % a['SiBusy'],
         'SI_SHADOW': '0x%08Xu' % a['SiShadow'],
@@ -57,7 +61,7 @@ def for_dol(path):
             w.insert(len(w) - 1, 0x60000000)
         sites.append([site, w])
         orig[str(site)] = struct.unpack('>I', dol.read(site, 4))[0]
-    return {'state': STATE, 'sites': sites, 'orig': orig, 'anchors': a}
+    return {'state': state, 'sites': sites, 'orig': orig, 'anchors': a}
 
 
 def gecko_text(title, patch):
@@ -80,4 +84,7 @@ if __name__ == '__main__':
         patch = for_dol(p)
         print(os.path.basename(p), {k: '%08X' % v for k, v in patch['anchors'].items()}, [len(w) * 4 for _, w in patch['sites']])
         if gecko:
-            open(gecko, 'w').write(gecko_text('Classic Controller + GameCube Controller (port 1)', patch))
+            gpatch = for_dol(p, GECKO_STATE)
+            end = 0x800028B8 + sum(8 + len(w) * 4 for _, w in gpatch['sites']) + 8
+            assert end <= GECKO_STATE, 'Gecko code list runs into its state (0x%08X)' % end
+            open(gecko, 'w').write(gecko_text('Classic Controller + GameCube Controller (port 1)', gpatch))
